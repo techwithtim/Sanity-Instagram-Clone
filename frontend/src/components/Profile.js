@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import EditProfile from "../components/EditProfile";
-import "../Profile.css";
+import "../css/Profile.css";
 
 export default function Profile({ addAlert, user }) {
   const [profileData, setProfileData] = useState({});
@@ -13,35 +13,37 @@ export default function Profile({ addAlert, user }) {
   const params = useParams();
 
   useEffect(() => {
-    if (profileData.followers) {
-      for (let follower of profileData.followers) {
-        if (follower.username === user) {
-          setFollowing(true);
-          return;
-        }
+    updateProfile(params.username);
+  }, [params.username, user]);
+
+  function updateFollowing(profile) {
+    for (let follower of profile.followers) {
+      if (follower.username === user) {
+        setFollowing(true);
+        return;
       }
     }
     setFollowing(false);
-  }, [profileData.following]);
-
-  useEffect(() => {
-    updateProfile(params.username);
-  }, []);
+  }
 
   function updateProfile(username) {
     fetch(`/getProfile?user=${username}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.length === 0) {
-          addAlert({ variant: "danger", message: "That user does not exist." });
+          addAlert({
+            variant: "danger",
+            message: "That user does not exist.",
+          });
           return;
         }
         fetch(`/getPosts?user=${params.username}`)
           .then((res) => res.json())
           .then((posts) => {
-            setProfileData(data[0]);
-            setOwner(user === data[0].username);
+            updateFollowing(data[0]);
             setPosts(posts);
+            setOwner(user === data[0].username);
+            setProfileData(data[0]);
           })
           .catch((err) =>
             addAlert({ variant: "danger", message: err.message })
@@ -75,7 +77,9 @@ export default function Profile({ addAlert, user }) {
       body: JSON.stringify({ user: user, id: profileData._id }),
     };
     fetch("/removeFollower", requestOptions)
-      .then((_res) => setFollowing(false))
+      .then((_res) => {
+        setFollowing(false);
+      })
       .catch((err) => addAlert({ variant: "danger", message: err.message }));
   }
 

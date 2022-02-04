@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Form, Button, ListGroup, Card } from "react-bootstrap";
 import ProfileListItem from "./ProfileListItem";
-import "../Search.css";
+import "../css/Search.css";
 
 export default function Search() {
   const [searchText, updateSearchText] = useState("");
   const [searchResults, updateSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   function searchUpdated(e) {
     updateSearchText(e.target.value);
@@ -13,10 +14,12 @@ export default function Search() {
 
   function searched(e) {
     e.preventDefault();
+    setLoading(true);
     fetch(`/searchForUsername?text=${searchText}`)
       .then((res) => res.json())
       .then((data) => {
         updateSearchResults(data);
+        setLoading(false);
       })
       .catch(console.error);
   }
@@ -34,7 +37,8 @@ export default function Search() {
           </Form.Group>
           <Button type="submit">Search</Button>
         </Form>
-        {searchResults.length > 0 ? (
+        {loading ? <p>Loading...</p> : null}
+        {searchResults.length > 0 && !loading ? (
           <div className="search-results-wrapper">
             <Card style={{ width: "100%" }}>
               <ListGroup variant="flush">
@@ -44,6 +48,8 @@ export default function Search() {
               </ListGroup>
             </Card>
           </div>
+        ) : !loading ? (
+          <p>No Search Results...</p>
         ) : null}
       </div>
     </div>

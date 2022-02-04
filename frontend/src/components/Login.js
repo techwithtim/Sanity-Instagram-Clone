@@ -1,8 +1,7 @@
 import { Form, Button } from "react-bootstrap";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-// import { getProfile } from "../api/apiCalls";
-import "../Login.css";
+import "../css/Login.css";
 
 export default function Login({ setUser, addAlert }) {
   const [username, setUsername] = useState("");
@@ -14,9 +13,9 @@ export default function Login({ setUser, addAlert }) {
       .then((res) => res.json())
       .then((data) => {
         if (data.length > 0) {
-          navigate("/");
           addAlert({ variant: "success", message: "Logged in successfully!" });
           setUser(username);
+          navigate("/");
         } else {
           addAlert({
             variant: "danger",

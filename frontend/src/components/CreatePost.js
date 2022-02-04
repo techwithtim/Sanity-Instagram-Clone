@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "../CreatePost.css";
+import "../css/CreatePost.css";
 
 export default function CreatePost({ user, addAlert }) {
   const [caption, setCaption] = useState("");
